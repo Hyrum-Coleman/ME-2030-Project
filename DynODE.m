@@ -12,7 +12,7 @@ R = 5 * 0.0254; %% semi-circle radius [in], converted to [m]
 angRamp = 50; %% [deg], ramp angle relative to horizontal
 mu = .1; %% coefficent of friction
 mass = 1; %% mass of block [kg]; this is arbitrary in this problem
-H = 10; %% drop height above bottom of loop [in], converted to [m]
+H = 10:-.1:0; %% drop height above bottom of loop [in], converted to [m]
 
 t = 0:0.1:6; %% time paratmeter (start time:time step:end time) for solving
      % ODE [s]; you may want to adjust this to shorten or lengthen the simulation
@@ -21,7 +21,6 @@ t = 0:0.1:6; %% time paratmeter (start time:time step:end time) for solving
 angInit = 90 - angRamp; %% initial loop angle, rel to pos-x [deg]
 angInitRad = angInit*pi/180; %% convert deg to rad
 hLoop = H - R*(1-sin(angInitRad)); %% height change between drop and loop entry
-sRamp = hLoop/cos(angInitRad); %% distance traveled down ramp before entering loop
 vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad))); %% velocity entering loop, 
      % from work-energy
 sLoop = R*angInitRad; %% initial loop position (defined from initial angle) [m]
