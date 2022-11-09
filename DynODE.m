@@ -23,7 +23,8 @@ flag = true;
 normFlag = false;
 angFlag = false;
 
-fprintf("Starting loop for mu = %f", mu)
+fprintf("Starting loop for mu = %.2f", mu)
+tic
 while flag
     % Setup
     angInit = 90 - angRamp;
@@ -45,7 +46,7 @@ while flag
 
     % Check flags
     index = find((angDeg >= 270 - 1) & (angDeg <= 270 + 1));
-    avg = mean(fNorm(index))
+    avg = mean(fNorm(index));
     if (avg >= 0 - .001) && (avg <= 0 + .001)
         normFlag = true;
     end
@@ -60,11 +61,11 @@ while flag
 
     % Iterate
     H = H + .00000001;
-    iters = iters + 1
+    iters = iters + 1;
 end
+fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37);
+fprintf("It took %d iterations\n", iters);
 toc
-fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37)
-%angAdjust = -(90 - pos/R*180/pi); % redefines angle to be zero at bottom of loop
 
 % prepare figure 1 (angle and velocity as a function of time)
 figure(1);
@@ -108,12 +109,13 @@ hold off;
 %% Calculation for mu = .2
 mu = .2;
 H = 1.1648;
-iters = 0
+iters = 0;
 flag = true;
 normFlag = false;
 angFlag = false;
 
 fprintf('Starting loop for mu = %f', mu)
+tic
 while flag
     % Setup 
     angInit = 90 - angRamp;
@@ -135,7 +137,7 @@ while flag
 
     % Check flags
     index = find((angDeg >= 270 - 1) & (angDeg <= 270 + 1));
-    avg = mean(fNorm(index))
+    avg = mean(fNorm(index));
     if (avg >= 0 - .001) && (avg <= 0 + .001)
         normFlag = true;
     end
@@ -150,9 +152,11 @@ while flag
 
     % Increment
     H = H + .00000001;
-    iters = iters + 1
+    iters = iters + 1;
 end
-fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37)
+fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37);
+fprintf("It took %d iterations\n", iters);
+toc
 
 figure(3);
 hold on;
@@ -197,12 +201,13 @@ hold off;
 %% Calculation for mu = .5
 mu = .5;
 H = 9.26135;
-iters = 0
+iters = 0;
 flag = true;
 normFlag = false;
 angFlag = false;
 
 fprintf("Starting loop for mu = %f", mu)
+tic
 while flag
     % Setup 
     angInit = 90 - angRamp;
@@ -224,7 +229,7 @@ while flag
 
     % Check flags
     index = find((angDeg >= 270 - .1) & (angDeg <= 270 + .1));
-    avg = mean(fNorm(index))
+    avg = mean(fNorm(index));
     if (avg >= 0 - .001) && (avg <= 0 + .001)
         normFlag = true;
     end
@@ -239,9 +244,11 @@ while flag
 
     % Increment
     H = H + .00000001;
-    iters = iters + 1
+    iters = iters + 1;
 end
 fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37)
+fprintf("It took %d iterations\n", iters);
+toc
 toc
 
 figure(5);
