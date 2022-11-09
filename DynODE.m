@@ -25,7 +25,7 @@ flag = true;
 normFlag = false;
 angFlag = false;
 
-fprintf("Starting loop for mu = %.2f\n", mu)
+fprintf("Starting loop for mu = %.1f\n", mu)
 tic
 while flag
     % Setup
@@ -53,19 +53,24 @@ while flag
     if any(angDeg > 270)
         angFlag = true; % Set to true if we have enough height to reach the top of the loop
     end
-    if (avg >= 0 - .0000001) && (avg <= 0 + 1)
+    if (avg >= 0 - 1e-16) && (avg <= 0 + 1)
         normFlag = true; % Set to true if the average NF at the top is ~0
     end
 
     if angFlag && normFlag
         flag = false; % exit loop if other flags are true
     end
+    if mod(iters, 1000) == 0
+        fprintf("Average: %f", avg)
+        fprintf("  Iters: %d\n", iters)
+    end
 
     % Iterate
     H = H + .00000001;
     iters = iters + 1;
 end
-fprintf("The minimum height for mu = %.2f is %f inches\n", mu, H * 39.37);
+pointOneH = H * 39.37;
+fprintf("The minimum height for mu = %.1f is %.10f inches\n", mu, pointOneH);
 fprintf("It took %d iterations\n", iters);
 toc
 fprintf("\n")
@@ -116,7 +121,7 @@ flag = true;
 normFlag = false;
 angFlag = false;
 
-fprintf('Starting loop for mu = %.2f\n', mu)
+fprintf('Starting loop for mu = %.1f\n', mu)
 tic
 while flag
     % Setup 
@@ -152,11 +157,17 @@ while flag
         flag = false;
     end
 
+    if mod(iters, 10) == 0
+        fprintf("Average: %f", avg)
+        fprintf("  Iters: %d\n", iters)
+    end
+
     % Increment
     H = H + .00000001;
     iters = iters + 1;
 end
-fprintf("The minimum height for mu = %.2f is %f inches\n", mu, H * 39.37);
+pointTwoH = H * 39.37;
+fprintf("The minimum height for mu = %.1f is %.10f inches\n", mu, pointTwoH);
 fprintf("It took %d iterations\n", iters);
 toc
 fprintf("\n");
@@ -209,7 +220,7 @@ flag = true;
 normFlag = false;
 angFlag = false;
 
-fprintf("Starting loop for mu = %.2f\n", mu)
+fprintf("Starting loop for mu = %.1f\n", mu)
 tic
 while flag
     % Setup 
@@ -249,7 +260,8 @@ while flag
     H = H + .00000001;
     iters = iters + 1;
 end
-fprintf("The minimum height for mu = %.2f is %f inches\n", mu, H * 39.37)
+pointFiveH = H * 39.37;
+fprintf("The minimum height for mu = %.1f is %.10f inches\n", mu, pointFiveH)
 fprintf("It took %d iterations\n", iters);
 toc
 toc
@@ -293,3 +305,7 @@ muPlot = plot(0, 0);
 
 legend([fNormPlot,velPlot, muPlot],'Normal Force','Vel', 'Mu = 0.5');
 hold off;
+
+fprintf("\nmu = .1  H = %.10f", pointOneH)
+fprintf("mu = .2  H = %.10f", pointTwoH)
+fprintf("mu = .5  H = %.10f\n", pointFiveH)
