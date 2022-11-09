@@ -40,25 +40,25 @@ while flag
     [t,y] = ode45(@funcBlock,t,y0);
     
     % Evaluate results
-    pos = y(:,1);
-    vel = y(:,2);
-    ang = pos/R;
-    angDeg = ang*180/pi;
+    pos = y(:,1); % position
+    vel = y(:,2); % velocity
+    ang = pos/R;  % angles
+    angDeg = ang*180/pi; % degree versions of angles
     fNorm = mass*(9.81*sin(ang)+vel.^2/R); % normal force
 
     % Check flags
-    index = find((angDeg >= 270 - 1) & (angDeg <= 270 + 1));
-    avg = mean(fNorm(index));
-    if (avg >= 0 - .001) && (avg <= 0 + .001)
-        normFlag = true;
-    end
+    index = find((angDeg >= 270 - 1) & (angDeg <= 270 + 1)); % where the angle is ~ 270 (at the top of the loop)
+    avg = mean(fNorm(index)); % average normal force at the top of the loop
 
     if any(angDeg > 270)
-        angFlag = true;
+        angFlag = true; % Set to true if we have enough height to reach the top of the loop
+    end
+    if (avg >= 0 - .001) && (avg <= 0 + .001)
+        normFlag = true; % Set to true if the average NF at the top is ~0
     end
 
     if angFlag && normFlag
-        flag = false;
+        flag = false; % exit loop if other flags are true
     end
 
     % Iterate
