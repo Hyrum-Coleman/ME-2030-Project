@@ -1,5 +1,7 @@
 %% Initialize workspace
-clear all, close all, clc
+clear
+clc
+close all
 % This code, along with funcBlock.m, simulates the frictional sliding of a 
 % block down a ramp and around a circular (slotted) loop. The loop is said
 % to be slotted because normal force between the block and the loop is 
@@ -23,7 +25,7 @@ flag = true;
 normFlag = false;
 angFlag = false;
 
-fprintf("Starting loop for mu = %.2f", mu)
+fprintf("Starting loop for mu = %.2f\n", mu)
 tic
 while flag
     % Setup
@@ -63,9 +65,10 @@ while flag
     H = H + .00000001;
     iters = iters + 1;
 end
-fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37);
+fprintf("The minimum height for mu = %.2f is %f inches\n", mu, H * 39.37);
 fprintf("It took %d iterations\n", iters);
 toc
+fprintf("\n")
 
 % prepare figure 1 (angle and velocity as a function of time)
 figure(1);
@@ -108,13 +111,13 @@ hold off;
 
 %% Calculation for mu = .2
 mu = .2;
-H = 1.1648;
+H = 1.16634;
 iters = 0;
 flag = true;
 normFlag = false;
 angFlag = false;
 
-fprintf('Starting loop for mu = %f', mu)
+fprintf('Starting loop for mu = %.2f\n', mu)
 tic
 while flag
     % Setup 
@@ -154,9 +157,10 @@ while flag
     H = H + .00000001;
     iters = iters + 1;
 end
-fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37);
+fprintf("The minimum height for mu = %.2f is %f inches\n", mu, H * 39.37);
 fprintf("It took %d iterations\n", iters);
 toc
+fprintf("\n");
 
 figure(3);
 hold on;
@@ -200,13 +204,13 @@ hold off;
 
 %% Calculation for mu = .5
 mu = .5;
-H = 9.26135;
+H = 9.26;
 iters = 0;
 flag = true;
 normFlag = false;
 angFlag = false;
 
-fprintf("Starting loop for mu = %f", mu)
+fprintf("Starting loop for mu = %.2f\n", mu)
 tic
 while flag
     % Setup 
@@ -246,7 +250,7 @@ while flag
     H = H + .00000001;
     iters = iters + 1;
 end
-fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37)
+fprintf("The minimum height for mu = %.2f is %f inches\n", mu, H * 39.37)
 fprintf("It took %d iterations\n", iters);
 toc
 toc
