@@ -7,14 +7,15 @@ clear all, close all, clc
 % to zero), as would happen in an actual open loop.
 
 %% Define project constants and initial conditions
+tic
 global R mu %% Define R and mu as global variables
 R = 5 * 0.0254; %% semi-circle radius [in], converted to [m]
 angRamp = 50; %% [deg], ramp angle relative to horizontal
 mu = .1; %% coefficent of friction
 mass = 1; %% mass of block [kg]; this is arbitrary in this problem
-H = .6061569;
+ H = .60611;
 
-t = 0:0.001:2; %% time paratmeter (start time:time step:end time) for solving
+t = 0:0.0001:2; %% time paratmeter (start time:time step:end time) for solving
      % ODE [s]; you may want to adjust this to shorten or lengthen the simulation
 
 iters = 0;
@@ -22,32 +23,29 @@ flag = true;
 normFlag = false;
 angFlag = false;
 
+fprintf("Starting loop for mu = %f", mu)
 while flag
-    % Determine velocity of block when it enters loop
-    angInit = 90 - angRamp; %% initial loop angle, rel to pos-x [deg]
-    angInitRad = angInit*pi/180; %% convert deg to rad
-    hLoop = H - R*(1-sin(angInitRad)); %% height change between drop and loop entry
-    vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad))); %% velocity entering loop, 
-         % from work-energy
+    % Setup
+    angInit = 90 - angRamp;
+    angInitRad = angInit*pi/180;
+    hLoop = H - R*(1-sin(angInitRad));
+    vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
     sLoop = R*angInitRad; %% initial loop position (defined from initial angle) [m]
     
     % Solve ODE
-    % organize initial conditions into array
-    y0 = [sLoop vLoop]; %% [<initial pos> <initial velocity>]
-    
-    % solve ODE at each specified time
-    [t,y] = ode45(@funcBlock,t,y0); %%solve ODE defined in "funcBlock"
+    y0 = [sLoop vLoop];
+    [t,y] = ode45(@funcBlock,t,y0);
     
     % Evaluate results
-    % relabel output
-    pos = y(:,1); % pos [m]
-    vel = y(:,2); % velocity [m/s]
-    ang = pos/R; % loop angle [rad]
+    pos = y(:,1);
+    vel = y(:,2);
+    ang = pos/R;
     angDeg = ang*180/pi;
     fNorm = mass*(9.81*sin(ang)+vel.^2/R); % normal force
-    index = find((angDeg >= 270 - .1) & (angDeg <= 270 + .1));
-    fNorm(index)
-    avg = mean(fNorm(index));
+
+    % Check flags
+    index = find((angDeg >= 270 - 1) & (angDeg <= 270 + 1));
+    avg = mean(fNorm(index))
     if (avg >= 0 - .001) && (avg <= 0 + .001)
         normFlag = true;
     end
@@ -59,10 +57,13 @@ while flag
     if angFlag && normFlag
         flag = false;
     end
+
+    % Iterate
     H = H + .00000001;
-    iters = iters + 1;
+    iters = iters + 1
 end
-fprintf("The minimum height is %f inches\n", H * 39.37)
+toc
+fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37)
 %angAdjust = -(90 - pos/R*180/pi); % redefines angle to be zero at bottom of loop
 
 % prepare figure 1 (angle and velocity as a function of time)
@@ -106,12 +107,13 @@ hold off;
 
 %% Calculation for mu = .2
 mu = .2;
-H = 200;
-iters = 0;
+H = 1.1648;
+iters = 0
 flag = true;
 normFlag = false;
 angFlag = false;
 
+fprintf('Starting loop for mu = %f', mu)
 while flag
     % Setup 
     angInit = 90 - angRamp;
@@ -132,9 +134,8 @@ while flag
     fNorm = mass*(9.81*sin(ang)+vel.^2/R);
 
     % Check flags
-    index = find((angDeg >= 270 - .1) & (angDeg <= 270 + .1));
-    fNorm(index)
-    avg = mean(fNorm(index));
+    index = find((angDeg >= 270 - 1) & (angDeg <= 270 + 1));
+    avg = mean(fNorm(index))
     if (avg >= 0 - .001) && (avg <= 0 + .001)
         normFlag = true;
     end
@@ -149,9 +150,9 @@ while flag
 
     % Increment
     H = H + .00000001;
-    iters = iters + 1;
+    iters = iters + 1
 end
-fprintf("The minimum height is %f inches\n", H * 39.37)
+fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37)
 
 figure(3);
 hold on;
@@ -195,19 +196,53 @@ hold off;
 
 %% Calculation for mu = .5
 mu = .5;
-H = 50;
+H = 9.26135;
+iters = 0
+flag = true;
+normFlag = false;
+angFlag = false;
 
-hLoop = H - R*(1-sin(angInitRad));
-sRamp = hLoop/cos(angInitRad);
-vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
-sLoop = R*angInitRad;
-y0 = [sLoop vLoop];
-[t,y] = ode45(@funcBlock,t,y0);
-pos = y(:,1);
-vel = y(:,2);
-ang = pos/R;
-fNorm = mass*(9.81*sin(ang)+vel.^2/R);
-angDeg = ang*180/pi;
+fprintf("Starting loop for mu = %f", mu)
+while flag
+    % Setup 
+    angInit = 90 - angRamp;
+    angInitRad = angInit*pi/180;
+    hLoop = H - R*(1-sin(angInitRad));
+    vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
+    sLoop = R*angInitRad; 
+    
+    % Solve ODE
+    y0 = [sLoop vLoop];
+    [t,y] = ode45(@funcBlock,t,y0);
+    
+    % Evaluate results
+    pos = y(:,1);
+    vel = y(:,2);
+    ang = pos/R;
+    angDeg = ang*180/pi;
+    fNorm = mass*(9.81*sin(ang)+vel.^2/R);
+
+    % Check flags
+    index = find((angDeg >= 270 - .1) & (angDeg <= 270 + .1));
+    avg = mean(fNorm(index))
+    if (avg >= 0 - .001) && (avg <= 0 + .001)
+        normFlag = true;
+    end
+
+    if any(angDeg > 270)
+        angFlag = true;
+    end
+
+    if angFlag && normFlag
+        flag = false;
+    end
+
+    % Increment
+    H = H + .00000001;
+    iters = iters + 1
+end
+fprintf("The minimum height for mu = %f is %f inches\n", mu, H * 39.37)
+toc
 
 figure(5);
 hold on;
