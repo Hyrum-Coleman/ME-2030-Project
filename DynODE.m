@@ -47,20 +47,20 @@ while flag
     fNorm = mass*(9.81*sin(ang)+vel.^2/R); % normal force
     index = find((angDeg >= 270 - .1) & (angDeg <= 270 + .1));
     fNorm(index)
-    avg = mean(fNorm(index))
+    avg = mean(fNorm(index));
     if (avg >= 0 - .001) && (avg <= 0 + .001)
-        normFlag = true
+        normFlag = true;
     end
 
     if any(angDeg > 270)
-        angFlag = true
+        angFlag = true;
     end
 
     if angFlag && normFlag
         flag = false;
     end
     H = H + .00000001;
-    iters = iters + 1
+    iters = iters + 1;
 end
 fprintf("The minimum height is %f inches\n", H * 39.37)
 %angAdjust = -(90 - pos/R*180/pi); % redefines angle to be zero at bottom of loop
@@ -102,4 +102,149 @@ fNormPlot = plot(angDeg,fNorm,'-','LineWidth',2);
 ylabel("Force (N)");
 
 legend([fNormPlot,velPlot],'Normal Force','Vel');
+hold off;
+
+%% Calculation for mu = .2
+mu = .2;
+H = 200;
+iters = 0;
+flag = true;
+normFlag = false;
+angFlag = false;
+
+while flag
+    % Setup 
+    angInit = 90 - angRamp;
+    angInitRad = angInit*pi/180;
+    hLoop = H - R*(1-sin(angInitRad));
+    vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
+    sLoop = R*angInitRad; 
+    
+    % Solve ODE
+    y0 = [sLoop vLoop];
+    [t,y] = ode45(@funcBlock,t,y0);
+    
+    % Evaluate results
+    pos = y(:,1);
+    vel = y(:,2);
+    ang = pos/R;
+    angDeg = ang*180/pi;
+    fNorm = mass*(9.81*sin(ang)+vel.^2/R);
+
+    % Check flags
+    index = find((angDeg >= 270 - .1) & (angDeg <= 270 + .1));
+    fNorm(index)
+    avg = mean(fNorm(index));
+    if (avg >= 0 - .001) && (avg <= 0 + .001)
+        normFlag = true;
+    end
+
+    if any(angDeg > 270)
+        angFlag = true;
+    end
+
+    if angFlag && normFlag
+        flag = false;
+    end
+
+    % Increment
+    H = H + .00000001;
+    iters = iters + 1;
+end
+fprintf("The minimum height is %f inches\n", H * 39.37)
+
+figure(3);
+hold on;
+grid on; box on;
+xlabel('Time (s)')
+
+% plot position results
+yyaxis left
+posPlot = plot(t,angDeg,'-','LineWidth',2);
+ylabel("Ang (deg)");
+
+% plot velocity results
+yyaxis right
+velPlot = plot(t,vel,'-','LineWidth',2);
+ylabel("Vel (m/s)");
+muPlot = plot(0, 0);
+
+legend([posPlot,velPlot, muPlot],'Ang','Vel', 'Mu = 0.2');
+hold off;
+
+% prepare figure 2 (normal force and velocity as a function of loop angle,
+     % where the angle is zero at the bottom of the loop)
+figure(4);
+hold on;
+grid on; box on;
+xlabel('Angle (deg)')
+
+% plot velocity results
+yyaxis right
+velPlot = plot(angDeg, vel,'-','LineWidth',2);
+ylabel("Vel (m/s)");
+
+% plot normal force results
+yyaxis left
+fNormPlot = plot(angDeg,fNorm,'-','LineWidth',2);
+ylabel("Force (N)");
+muPlot = plot(0, 0);
+
+legend([fNormPlot,velPlot, muPlot],'Normal Force','Vel', 'Mu = 0.2');
+hold off;
+
+%% Calculation for mu = .5
+mu = .5;
+H = 50;
+
+hLoop = H - R*(1-sin(angInitRad));
+sRamp = hLoop/cos(angInitRad);
+vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
+sLoop = R*angInitRad;
+y0 = [sLoop vLoop];
+[t,y] = ode45(@funcBlock,t,y0);
+pos = y(:,1);
+vel = y(:,2);
+ang = pos/R;
+fNorm = mass*(9.81*sin(ang)+vel.^2/R);
+angDeg = ang*180/pi;
+
+figure(5);
+hold on;
+grid on; box on;
+xlabel('Time (s)')
+
+% plot position results
+yyaxis left
+posPlot = plot(t,angDeg,'-','LineWidth',2);
+ylabel("Ang (deg)");
+
+% plot velocity results
+yyaxis right
+velPlot = plot(t,vel,'-','LineWidth',2);
+ylabel("Vel (m/s)");
+muPlot = plot(0, 0);
+
+legend([posPlot,velPlot, muPlot],'Ang','Vel', 'Mu = 0.5');
+hold off;
+
+% prepare figure 2 (normal force and velocity as a function of loop angle,
+     % where the angle is zero at the bottom of the loop)
+figure(6);
+hold on;
+grid on; box on;
+xlabel('Angle (deg)')
+
+% plot velocity results
+yyaxis right
+velPlot = plot(angDeg, vel,'-','LineWidth',2);
+ylabel("Vel (m/s)");
+
+% plot normal force results
+yyaxis left
+fNormPlot = plot(angDeg,fNorm,'-','LineWidth',2);
+ylabel("Force (N)");
+muPlot = plot(0, 0);
+
+legend([fNormPlot,velPlot, muPlot],'Normal Force','Vel', 'Mu = 0.5');
 hold off;
