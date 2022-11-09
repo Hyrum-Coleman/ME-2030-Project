@@ -13,14 +13,15 @@ R = 5 * 0.0254; %% semi-circle radius [in], converted to [m]
 angRamp = 50; %% [deg], ramp angle relative to horizontal
 mu = .1; %% coefficent of friction
 mass = 200; %% mass of block [kg]; this is arbitrary in this problem
-H = 0.01;
-fNorm = 2000;
+H = .01;
+fNorm = -2000;
+angDeg = 0;
 
 t = 0:.0001:6; %% time paratmeter (start time:time step:end time) for solving
      % ODE [s]; you may want to adjust this to shorten or lengthen the simulation
 contains_negative = any(fNorm<0); % returns true or false
 iters = 0;
-while any(fNorm<0) == false
+while any(angDeg<=270)
     % Determine velocity of block when it enters loop
     angInit = 90 - angRamp; %% initial loop angle, rel to pos-x [deg]
     angInitRad = angInit*pi/180; %% convert deg to rad
@@ -41,13 +42,13 @@ while any(fNorm<0) == false
     pos = y(:,1); % pos [m]
     vel = y(:,2); % velocity [m/s]
     ang = pos/R; % loop angle [rad]
+    angDeg = ang*180/pi;
     fNorm = mass*(9.81*sin(ang)+vel.^2/R); % normal force
     contains_negative = any(fNorm<0); % returns true or false
     H = H + .01;
     iters = iters + 1
 end
 H
-angDeg = ang*180/pi; % loop angle (90 deg is bottom of loop) [deg]
 %angAdjust = -(90 - pos/R*180/pi); % redefines angle to be zero at bottom of loop
 
 % prepare figure 1 (angle and velocity as a function of time)
@@ -93,7 +94,7 @@ hold off;
 
 %% Calculation for mu = .2
 mu = .2;
-H = 20;
+H = 200;
 
 hLoop = H - R*(1-sin(angInitRad));
 sRamp = hLoop/cos(angInitRad);
