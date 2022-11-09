@@ -8,38 +8,61 @@ clear all, close all, clc
 
 %% Define project constants and initial conditions
 global R mu %% Define R and mu as global variables
-R = 5     *0.0254; %% semi-circle radius [in], converted to [m]
+R = 5 * 0.0254; %% semi-circle radius [in], converted to [m]
 angRamp = 50; %% [deg], ramp angle relative to horizontal
-mu = 0.2; %% coefficent of friction
+mu = .1; %% coefficent of friction
 mass = 1; %% mass of block [kg]; this is arbitrary in this problem
-H = 26     *0.0254; %% drop height above bottom of loop [in], converted to [m]
+H = .6061569;
 
 t = 0:0.001:2; %% time paratmeter (start time:time step:end time) for solving
      % ODE [s]; you may want to adjust this to shorten or lengthen the simulation
 
-%% Determine velocity of block when it enters loop
-angInit = 90 - angRamp; %% initial loop angle, rel to pos-x [deg]
-angInitRad = angInit*pi/180; %% convert deg to rad
-hLoop = H - R*(1-sin(angInitRad)); %% height change between drop and loop entry
-sRamp = hLoop/cos(angInitRad); %% distance traveled down ramp before entering loop
-vLoop = sqrt(2*9.81*hLoop*(1-mu*tan(angInitRad))); %% velocity entering loop, 
-     % from work-energy
-sLoop = R*angInitRad; %% initial loop position (defined from initial angle) [m]
+iters = 0;
+flag = true;
+normFlag = false;
+angFlag = false;
 
-%% Solve ODE
-% organize initial conditions into array
-y0 = [sLoop vLoop]; %% [<initial pos> <initial velocity>]
+while flag
+    % Determine velocity of block when it enters loop
+    angInit = 90 - angRamp; %% initial loop angle, rel to pos-x [deg]
+    angInitRad = angInit*pi/180; %% convert deg to rad
+    hLoop = H - R*(1-sin(angInitRad)); %% height change between drop and loop entry
+    vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad))); %% velocity entering loop, 
+         % from work-energy
+    sLoop = R*angInitRad; %% initial loop position (defined from initial angle) [m]
+    
+    % Solve ODE
+    % organize initial conditions into array
+    y0 = [sLoop vLoop]; %% [<initial pos> <initial velocity>]
+    
+    % solve ODE at each specified time
+    [t,y] = ode45(@funcBlock,t,y0); %%solve ODE defined in "funcBlock"
+    
+    % Evaluate results
+    % relabel output
+    pos = y(:,1); % pos [m]
+    vel = y(:,2); % velocity [m/s]
+    ang = pos/R; % loop angle [rad]
+    angDeg = ang*180/pi;
+    fNorm = mass*(9.81*sin(ang)+vel.^2/R); % normal force
+    index = find((angDeg >= 270 - .1) & (angDeg <= 270 + .1));
+    fNorm(index)
+    avg = mean(fNorm(index))
+    if (avg >= 0 - .001) && (avg <= 0 + .001)
+        normFlag = true
+    end
 
-% solve ODE at each specified time
-[t,y] = ode45(@funcBlock,t,y0); %%solve ODE defined in "funcBlock"
+    if any(angDeg > 270)
+        angFlag = true
+    end
 
-%% Evaluate results
-% relabel output
-pos = y(:,1); % pos [m]
-vel = y(:,2); % velocity [m/s]
-ang = pos/R; % loop angle [rad]
-fNorm = mass*(9.81*sin(ang)+vel.^2/R); % normal force
-angDeg = ang*180/pi; % loop angle (90 deg is bottom of loop) [deg]
+    if angFlag && normFlag
+        flag = false;
+    end
+    H = H + .00000001;
+    iters = iters + 1
+end
+fprintf("The minimum height is %f inches\n", H * 39.37)
 %angAdjust = -(90 - pos/R*180/pi); % redefines angle to be zero at bottom of loop
 
 % prepare figure 1 (angle and velocity as a function of time)
