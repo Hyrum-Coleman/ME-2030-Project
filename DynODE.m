@@ -157,7 +157,7 @@ while flag
         flag = false;
     end
 
-    if mod(iters, 10) == 0
+    if mod(iters, 100) == 0
         fprintf("Average: %f", avg)
         fprintf("  Iters: %d\n", iters)
     end
@@ -254,6 +254,10 @@ while flag
 
     if angFlag && normFlag
         flag = false;
+    end
+    if mod(iters, 100) == 0
+        fprintf("Average: %f", avg)
+        fprintf("  Iters: %d\n", iters)
     end
 
     % Increment
