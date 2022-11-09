@@ -8,7 +8,7 @@ close all
 % allowed to take on a negative value, instead of just disappearing (going
 % to zero), as would happen in an actual open loop.
 
-%% Define project constants and initial conditions
+%% Calculation for mu = .1
 tic
 global R mu %% Define R and mu as global variables
 R = 5 * 0.0254; %% semi-circle radius [in], converted to [m]
