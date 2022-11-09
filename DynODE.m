@@ -53,7 +53,7 @@ while flag
     if any(angDeg > 270)
         angFlag = true; % Set to true if we have enough height to reach the top of the loop
     end
-    if (avg >= 0 - .001) && (avg <= 0 + .001)
+    if (avg >= 0 - .0000001) && (avg <= 0 + 1)
         normFlag = true; % Set to true if the average NF at the top is ~0
     end
 
