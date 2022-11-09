@@ -162,6 +162,7 @@ fprintf("It took %d iterations\n", iters);
 toc
 fprintf("\n");
 
+% prepare figure 3
 figure(3);
 hold on;
 grid on; box on;
@@ -181,8 +182,7 @@ muPlot = plot(0, 0);
 legend([posPlot,velPlot, muPlot],'Ang','Vel', 'Mu = 0.2');
 hold off;
 
-% prepare figure 2 (normal force and velocity as a function of loop angle,
-     % where the angle is zero at the bottom of the loop)
+% prepare figure 4
 figure(4);
 hold on;
 grid on; box on;
@@ -255,6 +255,7 @@ fprintf("It took %d iterations\n", iters);
 toc
 toc
 
+% prepare figure 5
 figure(5);
 hold on;
 grid on; box on;
@@ -274,8 +275,7 @@ muPlot = plot(0, 0);
 legend([posPlot,velPlot, muPlot],'Ang','Vel', 'Mu = 0.5');
 hold off;
 
-% prepare figure 2 (normal force and velocity as a function of loop angle,
-     % where the angle is zero at the bottom of the loop)
+% prepare figure 6
 figure(6);
 hold on;
 grid on; box on;
