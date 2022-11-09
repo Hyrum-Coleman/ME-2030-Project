@@ -89,8 +89,7 @@ ylabel("Vel (m/s)");
 legend([posPlot,velPlot],'Ang','Vel');
 hold off;
 
-% prepare figure 2 (normal force and velocity as a function of loop angle,
-     % where the angle is zero at the bottom of the loop)
+% prepare figure 2
 figure(2);
 hold on;
 grid on; box on;
