@@ -9,7 +9,6 @@ close all
 % to zero), as would happen in an actual open loop.
 
 %% Calculation for mu = .1
-tic
 global R mu %% Define R and mu as global variables
 R = 5 * 0.0254; %% semi-circle radius [in], converted to [m]
 angRamp = 50; %% [deg], ramp angle relative to horizontal
@@ -87,7 +86,8 @@ end
 pointOneH = H * 39.37;
 fprintf("The minimum height for mu = %.1f is %.16f inches\n", mu, pointOneH);
 fprintf("It took %d iterations\n", iters);
-toc
+time1 = toc;
+fprintf("%f seconds elapsed\n", time1)
 fprintf("\n")
 
 % prepare figure 1 (angle and velocity as a function of time)
@@ -199,7 +199,8 @@ end
 pointTwoH = H * 39.37;
 fprintf("The minimum height for mu = %.1f is %.16f inches\n", mu, pointTwoH);
 fprintf("It took %d iterations\n", iters);
-toc
+time2 = toc;
+fprintf("%f minutes elapsed\n", (time2 / 60))
 fprintf("\n");
 
 % prepare figure 3
@@ -313,9 +314,8 @@ end
 pointFiveH = H * 39.37;
 fprintf("The minimum height for mu = %.1f is %.16f inches\n", mu, pointFiveH)
 fprintf("It took %d iterations\n", iters);
-toc
-toc
-
+time3 = toc;
+fprintf("%f minutes elapsed\n", (time3 / 60))
 % prepare figure 5
 figure(5);
 hold on;
@@ -359,3 +359,4 @@ hold off;
 fprintf("\nmu = .1  H = %.10f inches\n", pointOneH)
 fprintf("mu = .2  H = %.10f inches\n", pointTwoH)
 fprintf("mu = .5  H = %.10f inches\n", pointFiveH)
+fprintf("Total time elapsed: %f minutes\n", (time1 + time2 + time3) / 60)
