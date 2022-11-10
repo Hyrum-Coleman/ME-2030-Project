@@ -15,62 +15,77 @@ R = 5 * 0.0254; %% semi-circle radius [in], converted to [m]
 angRamp = 50; %% [deg], ramp angle relative to horizontal
 mu = .1; %% coefficent of friction
 mass = 1; %% mass of block [kg]; this is arbitrary in this problem
- H = .60611;
-
+A = .6;
+B = .61;
 t = 0:0.0001:2; %% time paratmeter (start time:time step:end time) for solving
      % ODE [s]; you may want to adjust this to shorten or lengthen the simulation
-
+H = (A + B) / 2;
 iters = 0;
 flag = true;
-normFlag = false;
-angFlag = false;
 
 fprintf("Starting loop for mu = %.1f\n", mu)
 tic
 while flag
+    iters = iters + 1;
+    hOld = H;
+    H = (A + B) / 2;
     % Setup
     angInit = 90 - angRamp;
     angInitRad = angInit*pi/180;
     hLoop = H - R*(1-sin(angInitRad));
-    vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
+    vHLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
     sLoop = R*angInitRad; %% initial loop position (defined from initial angle) [m]
+
+    ALoop = A - R*(1-sin(angInitRad));
+    vALoop = sqrt(2.*9.81.*ALoop.*(1-mu.*tan(angInitRad)));
     
     % Solve ODE
-    y0 = [sLoop vLoop];
-    [t,y] = ode45(@funcBlock,t,y0);
+    yH0 = [sLoop vHLoop];
+    yA0 = [sLoop vALoop];
+    [t,yH] = ode45(@funcBlock,t,yH0);
+    [~, yA] = ode45(@funcBlock, t, yA0);
     
     % Evaluate results
-    pos = y(:,1); % position
-    vel = y(:,2); % velocity
-    ang = pos/R;  % angles
-    angDeg = ang*180/pi; % degree versions of angles
-    fNorm = mass*(9.81*sin(ang)+vel.^2/R); % normal force
+    posH = yH(:,1); % position
+    velH = yH(:,2); % velocity
+    angH = posH/R;  % angles
+    angDegH = angH*180/pi; % degree versions of angles
+    fNormH = mass*(9.81*sin(angH)+velH.^2/R); % normal force
 
-    % Check flags
-    index = find((angDeg >= 270 - 1) & (angDeg <= 270 + 1)); % where the angle is ~ 270 (at the top of the loop)
-    avg = mean(fNorm(index)); % average normal force at the top of the loop
+    posA = yA(:,1); % position
+    velA = yA(:,2); % velocity
+    angA = posA/R;  % angles
+    angDegA = angA*180/pi; % degree versions of angles
+    fNormA = mass*(9.81*sin(angA)+velA.^2/R); % normal force
+    
+    % Pull out useful values
+    indexH = find((angDegH >= 270 - .1) & (angDegH <= 270 + .1)); % where the angle is ~ 270 (at the top of the loop)
+    avgH = mean(fNormH(indexH)); % average normal force at the top of the loop
 
-    if any(angDeg > 270)
-        angFlag = true; % Set to true if we have enough height to reach the top of the loop
-    end
-    if (avg >= 0 - 1e-16) && (avg <= 0 + 1)
-        normFlag = true; % Set to true if the average NF at the top is ~0
+    indexA = find((angDegA >= 270 - .1) & (angDegA <= 270 + .1)); % where the angle is ~ 270 (at the top of the loop)
+    avgA = mean(fNormA(indexA)); % average normal force at the top of the loop
+
+    ea = abs((H - hOld) / H);
+    if iters > 2
+        if ea < 1e-16
+            break
+        end
     end
 
-    if angFlag && normFlag
-        flag = false; % exit loop if other flags are true
+    if avgA * avgH < 0
+        B = H;
+    else
+        A = H;
     end
-    if mod(iters, 1000) == 0
-        fprintf("Average: %f", avg)
+
+    if mod(iters, 10) == 0
+        fprintf("Average: %.16f", avgH)
         fprintf("  Iters: %d\n", iters)
     end
 
-    % Iterate
-    H = H + .00000001;
-    iters = iters + 1;
 end
 pointOneH = H * 39.37;
-fprintf("The minimum height for mu = %.1f is %.10f inches\n", mu, pointOneH);
+fprintf("The minimum height for mu = %.1f is %.16f inches\n", mu, pointOneH);
 fprintf("It took %d iterations\n", iters);
 toc
 fprintf("\n")
@@ -83,12 +98,12 @@ xlabel('Time (s)')
 
 % plot position results
 yyaxis left
-posPlot = plot(t,angDeg,'-','LineWidth',2);
+posPlot = plot(t,angDegH,'-','LineWidth',2);
 ylabel("Ang (deg)");
 
 % plot velocity results
 yyaxis right
-velPlot = plot(t,vel,'-','LineWidth',2);
+velPlot = plot(t,velH,'-','LineWidth',2);
 ylabel("Vel (m/s)");
 
 legend([posPlot,velPlot],'Ang','Vel');
@@ -102,12 +117,12 @@ xlabel('Angle (deg)')
 
 % plot velocity results
 yyaxis right
-velPlot = plot(angDeg, vel,'-','LineWidth',2);
+velPlot = plot(angDegH, velH,'-','LineWidth',2);
 ylabel("Vel (m/s)");
 
 % plot normal force results
 yyaxis left
-fNormPlot = plot(angDeg,fNorm,'-','LineWidth',2);
+fNormPlot = plot(angDegH,fNormH,'-','LineWidth',2);
 ylabel("Force (N)");
 
 legend([fNormPlot,velPlot],'Normal Force','Vel');
@@ -115,59 +130,74 @@ hold off;
 
 %% Calculation for mu = .2
 mu = .2;
-H = 1.16634;
 iters = 0;
 flag = true;
-normFlag = false;
-angFlag = false;
+A = 1;
+B = 2;
 
 fprintf('Starting loop for mu = %.1f\n', mu)
 tic
 while flag
-    % Setup 
+    iters = iters + 1;
+    hOld = H;
+    H = (A + B) / 2;
+    % Setup
     angInit = 90 - angRamp;
     angInitRad = angInit*pi/180;
     hLoop = H - R*(1-sin(angInitRad));
-    vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
-    sLoop = R*angInitRad; 
+    vHLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
+    sLoop = R*angInitRad; %% initial loop position (defined from initial angle) [m]
+
+    ALoop = A - R*(1-sin(angInitRad));
+    vALoop = sqrt(2.*9.81.*ALoop.*(1-mu.*tan(angInitRad)));
     
     % Solve ODE
-    y0 = [sLoop vLoop];
-    [t,y] = ode45(@funcBlock,t,y0);
+    yH0 = [sLoop vHLoop];
+    yA0 = [sLoop vALoop];
+    [t,yH] = ode45(@funcBlock,t,yH0);
+    [~, yA] = ode45(@funcBlock, t, yA0);
     
     % Evaluate results
-    pos = y(:,1);
-    vel = y(:,2);
-    ang = pos/R;
-    angDeg = ang*180/pi;
-    fNorm = mass*(9.81*sin(ang)+vel.^2/R);
+    posH = yH(:,1); % position
+    velH = yH(:,2); % velocity
+    angH = posH/R;  % angles
+    angDegH = angH*180/pi; % degree versions of angles
+    fNormH = mass*(9.81*sin(angH)+velH.^2/R); % normal force
 
-    % Check flags
-    index = find((angDeg >= 270 - 1) & (angDeg <= 270 + 1));
-    avg = mean(fNorm(index));
-    if (avg >= 0 - .001) && (avg <= 0 + .001)
-        normFlag = true;
+    posA = yA(:,1); % position
+    velA = yA(:,2); % velocity
+    angA = posA/R;  % angles
+    angDegA = angA*180/pi; % degree versions of angles
+    fNormA = mass*(9.81*sin(angA)+velA.^2/R); % normal force
+    
+    % Pull out useful values
+    indexH = find((angDegH >= 270 - .1) & (angDegH <= 270 + .1)); % where the angle is ~ 270 (at the top of the loop)
+    avgH = mean(fNormH(indexH)); % average normal force at the top of the loop
+
+    indexA = find((angDegA >= 270 - .1) & (angDegA <= 270 + .1)); % where the angle is ~ 270 (at the top of the loop)
+    avgA = mean(fNormA(indexA)); % average normal force at the top of the loop
+
+    ea = abs((H - hOld) / H);
+    if iters > 2
+        if ea < 1e-16
+            break
+        end
     end
 
-    if any(angDeg > 270)
-        angFlag = true;
+    if avgA * avgH < 0
+        B = H;
+    else
+        A = H;
     end
 
-    if angFlag && normFlag
-        flag = false;
-    end
-
-    if mod(iters, 100) == 0
-        fprintf("Average: %f", avg)
+    if mod(iters, 10) == 0
+        fprintf("Average: %.16f", avgH)
         fprintf("  Iters: %d\n", iters)
     end
 
-    % Increment
-    H = H + .00000001;
-    iters = iters + 1;
 end
 pointTwoH = H * 39.37;
-fprintf("The minimum height for mu = %.1f is %.10f inches\n", mu, pointTwoH);
+fprintf("The minimum height for mu = %.1f is %.16f inches\n", mu, pointTwoH);
 fprintf("It took %d iterations\n", iters);
 toc
 fprintf("\n");
@@ -180,12 +210,12 @@ xlabel('Time (s)')
 
 % plot position results
 yyaxis left
-posPlot = plot(t,angDeg,'-','LineWidth',2);
+posPlot = plot(t,angDegH,'-','LineWidth',2);
 ylabel("Ang (deg)");
 
 % plot velocity results
 yyaxis right
-velPlot = plot(t,vel,'-','LineWidth',2);
+velPlot = plot(t,velH,'-','LineWidth',2);
 ylabel("Vel (m/s)");
 muPlot = plot(0, 0);
 
@@ -200,12 +230,12 @@ xlabel('Angle (deg)')
 
 % plot velocity results
 yyaxis right
-velPlot = plot(angDeg, vel,'-','LineWidth',2);
+velPlot = plot(angDegH, velH,'-','LineWidth',2);
 ylabel("Vel (m/s)");
 
 % plot normal force results
 yyaxis left
-fNormPlot = plot(angDeg,fNorm,'-','LineWidth',2);
+fNormPlot = plot(angDegH,fNormH,'-','LineWidth',2);
 ylabel("Force (N)");
 muPlot = plot(0, 0);
 
@@ -214,58 +244,74 @@ hold off;
 
 %% Calculation for mu = .5
 mu = .5;
-H = 9.26;
+A = 9;
+B = 9.5;
 iters = 0;
 flag = true;
-normFlag = false;
-angFlag = false;
 
 fprintf("Starting loop for mu = %.1f\n", mu)
 tic
 while flag
-    % Setup 
+    iters = iters + 1;
+    hOld = H;
+    H = (A + B) / 2;
+    % Setup
     angInit = 90 - angRamp;
     angInitRad = angInit*pi/180;
     hLoop = H - R*(1-sin(angInitRad));
-    vLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
-    sLoop = R*angInitRad; 
+    vHLoop = sqrt(2.*9.81.*hLoop.*(1-mu.*tan(angInitRad)));
+    sLoop = R*angInitRad; %% initial loop position (defined from initial angle) [m]
+
+    ALoop = A - R*(1-sin(angInitRad));
+    vALoop = sqrt(2.*9.81.*ALoop.*(1-mu.*tan(angInitRad)));
     
     % Solve ODE
-    y0 = [sLoop vLoop];
-    [t,y] = ode45(@funcBlock,t,y0);
+    yH0 = [sLoop vHLoop];
+    yA0 = [sLoop vALoop];
+    [t,yH] = ode45(@funcBlock,t,yH0);
+    [~, yA] = ode45(@funcBlock, t, yA0);
     
     % Evaluate results
-    pos = y(:,1);
-    vel = y(:,2);
-    ang = pos/R;
-    angDeg = ang*180/pi;
-    fNorm = mass*(9.81*sin(ang)+vel.^2/R);
+    posH = yH(:,1); % position
+    velH = yH(:,2); % velocity
+    angH = posH/R;  % angles
+    angDegH = angH*180/pi; % degree versions of angles
+    fNormH = mass*(9.81*sin(angH)+velH.^2/R); % normal force
 
-    % Check flags
-    index = find((angDeg >= 270 - .1) & (angDeg <= 270 + .1));
-    avg = mean(fNorm(index));
-    if (avg >= 0 - .001) && (avg <= 0 + .001)
-        normFlag = true;
+    posA = yA(:,1); % position
+    velA = yA(:,2); % velocity
+    angA = posA/R;  % angles
+    angDegA = angA*180/pi; % degree versions of angles
+    fNormA = mass*(9.81*sin(angA)+velA.^2/R); % normal force
+    
+    % Pull out useful values
+    indexH = find((angDegH >= 270 - .1) & (angDegH <= 270 + .1)); % where the angle is ~ 270 (at the top of the loop)
+    avgH = mean(fNormH(indexH)); % average normal force at the top of the loop
+
+    indexA = find((angDegA >= 270 - .1) & (angDegA <= 270 + .1)); % where the angle is ~ 270 (at the top of the loop)
+    avgA = mean(fNormA(indexA)); % average normal force at the top of the loop
+
+    ea = abs((H - hOld) / H);
+    if iters > 2
+        if ea < 1e-16
+            break
+        end
     end
 
-    if any(angDeg > 270)
-        angFlag = true;
+    if avgA * avgH < 0
+        B = H;
+    else
+        A = H;
     end
 
-    if angFlag && normFlag
-        flag = false;
-    end
-    if mod(iters, 100) == 0
-        fprintf("Average: %f", avg)
+    if mod(iters, 10) == 0
+        fprintf("Average: %.16f", avgH)
         fprintf("  Iters: %d\n", iters)
     end
 
-    % Increment
-    H = H + .00000001;
-    iters = iters + 1;
 end
 pointFiveH = H * 39.37;
-fprintf("The minimum height for mu = %.1f is %.10f inches\n", mu, pointFiveH)
+fprintf("The minimum height for mu = %.1f is %.16f inches\n", mu, pointFiveH)
 fprintf("It took %d iterations\n", iters);
 toc
 toc
@@ -278,12 +324,12 @@ xlabel('Time (s)')
 
 % plot position results
 yyaxis left
-posPlot = plot(t,angDeg,'-','LineWidth',2);
+posPlot = plot(t,angDegH,'-','LineWidth',2);
 ylabel("Ang (deg)");
 
 % plot velocity results
 yyaxis right
-velPlot = plot(t,vel,'-','LineWidth',2);
+velPlot = plot(t,velH,'-','LineWidth',2);
 ylabel("Vel (m/s)");
 muPlot = plot(0, 0);
 
@@ -298,18 +344,18 @@ xlabel('Angle (deg)')
 
 % plot velocity results
 yyaxis right
-velPlot = plot(angDeg, vel,'-','LineWidth',2);
+velPlot = plot(angDegH, velH,'-','LineWidth',2);
 ylabel("Vel (m/s)");
 
 % plot normal force results
 yyaxis left
-fNormPlot = plot(angDeg,fNorm,'-','LineWidth',2);
+fNormPlot = plot(angDegH,fNormH,'-','LineWidth',2);
 ylabel("Force (N)");
 muPlot = plot(0, 0);
 
 legend([fNormPlot,velPlot, muPlot],'Normal Force','Vel', 'Mu = 0.5');
 hold off;
 
-fprintf("\nmu = .1  H = %.10f", pointOneH)
-fprintf("mu = .2  H = %.10f", pointTwoH)
-fprintf("mu = .5  H = %.10f\n", pointFiveH)
+fprintf("\nmu = .1  H = %.10f inches\n", pointOneH)
+fprintf("mu = .2  H = %.10f inches\n", pointTwoH)
+fprintf("mu = .5  H = %.10f inches\n", pointFiveH)
