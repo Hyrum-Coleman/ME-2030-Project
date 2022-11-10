@@ -106,7 +106,9 @@ yyaxis right
 velPlot = plot(t,velH,'-','LineWidth',2);
 ylabel("Vel (m/s)");
 
-legend([posPlot,velPlot],'Ang','Vel');
+muPlot= [0,0];
+
+legend([posPlot,velPlot,muPlot],'Ang','Vel','Mu = 0.1');
 hold off;
 
 % prepare figure 2
@@ -125,7 +127,7 @@ yyaxis left
 fNormPlot = plot(angDegH,fNormH,'-','LineWidth',2);
 ylabel("Force (N)");
 
-legend([fNormPlot,velPlot],'Normal Force','Vel');
+legend([fNormPlot,velPlot, muPlot],'Normal Force','Vel','Mu = 0.1');
 hold off;
 
 %% Calculation for mu = .2
@@ -356,7 +358,7 @@ muPlot = plot(0, 0);
 legend([fNormPlot,velPlot, muPlot],'Normal Force','Vel', 'Mu = 0.5');
 hold off;
 
-fprintf("\nmu = .1  H = %.10f inches\n", pointOneH)
-fprintf("mu = .2  H = %.10f inches\n", pointTwoH)
-fprintf("mu = .5  H = %.10f inches\n", pointFiveH)
+fprintf("\nmu = .1  H = %.16f inches\n", pointOneH)
+fprintf("mu = .2  H = %.16f inches\n", pointTwoH)
+fprintf("mu = .5  H = %.16f inches\n", pointFiveH)
 fprintf("Total time elapsed: %f minutes\n", (time1 + time2 + time3) / 60)
