@@ -105,8 +105,7 @@ ylabel("Ang (deg)");
 yyaxis right
 velPlot = plot(t,velH,'-','LineWidth',2);
 ylabel("Vel (m/s)");
-
-muPlot= [0,0];
+muPlot = plot(0, 0);
 
 legend([posPlot,velPlot,muPlot],'Ang','Vel','Mu = 0.1');
 hold off;
@@ -126,6 +125,7 @@ ylabel("Vel (m/s)");
 yyaxis left
 fNormPlot = plot(angDegH,fNormH,'-','LineWidth',2);
 ylabel("Force (N)");
+muPlot = plot(0, 0);
 
 legend([fNormPlot,velPlot, muPlot],'Normal Force','Vel','Mu = 0.1');
 hold off;
