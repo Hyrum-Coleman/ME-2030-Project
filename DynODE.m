@@ -78,7 +78,7 @@ while flag
     end
 
     if mod(iters, 10) == 0
-        fprintf("Average: %.16f", avgH)
+        fprintf("Normal Force: %.16f", avgH)
         fprintf("  Iters: %d\n", iters)
     end
 
@@ -86,6 +86,7 @@ end
 pointOneH = H * 39.37;
 fprintf("The minimum height for mu = %.1f is %.16f inches\n", mu, pointOneH);
 fprintf("It took %d iterations\n", iters);
+fprintf("The result contains an error of %.18f percent\n", ea * 100)
 time1 = toc;
 fprintf("%f seconds elapsed\n", time1)
 fprintf("\n")
@@ -193,7 +194,7 @@ while flag
     end
 
     if mod(iters, 10) == 0
-        fprintf("Average: %.16f", avgH)
+        fprintf("Normal Force: %.16f", avgH)
         fprintf("  Iters: %d\n", iters)
     end
 
@@ -201,6 +202,7 @@ end
 pointTwoH = H * 39.37;
 fprintf("The minimum height for mu = %.1f is %.16f inches\n", mu, pointTwoH);
 fprintf("It took %d iterations\n", iters);
+fprintf("The result contains an error of %.18f percent\n", ea * 100)
 time2 = toc;
 fprintf("%f minutes elapsed\n", (time2 / 60))
 fprintf("\n");
@@ -308,7 +310,7 @@ while flag
     end
 
     if mod(iters, 10) == 0
-        fprintf("Average: %.16f", avgH)
+        fprintf("Normal Force: %.16f", avgH)
         fprintf("  Iters: %d\n", iters)
     end
 
@@ -316,6 +318,7 @@ end
 pointFiveH = H * 39.37;
 fprintf("The minimum height for mu = %.1f is %.16f inches\n", mu, pointFiveH)
 fprintf("It took %d iterations\n", iters);
+fprintf("The result contains an error of %.18f percent\n", ea * 100)
 time3 = toc;
 fprintf("%f minutes elapsed\n", (time3 / 60))
 % prepare figure 5
