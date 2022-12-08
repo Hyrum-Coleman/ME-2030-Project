@@ -1,4 +1,4 @@
-""""
+""""    
 This is a script for part 2 of the fall 2022 dynamics project.
 It will be used to calculate the minimum drop height for a ball to complete a loop on a ramp.
 
@@ -21,32 +21,30 @@ import matplotlib.pyplot as plt
 import math
 
 # define global constants
-MASS = 0.028  # mass of the ball in kg
 RADIUS = 5 * 0.0254  # radius of the loop in inches converted to meters
 RAMP_ANGLE = 50  # angle of the ramp in degrees
 theta_rad = RAMP_ANGLE * math.pi / 180
-theta_ball = 47.795
-theta_ball_rad = theta_ball * math.pi / 180
 g = 9.8  # gravitational acceleration in m/s^2
-rho = 1.225  # density of the air in kg/m^3
-Cd = 0.47  # drag coefficient of a sphere
-r_ball = 0.0159  # radius of the ball in m
-mu_s = .55
 
 
-def bisection(f, a, b, tol):
+def bisection(f, a, b, tol, params):
     while abs(a - b) > tol:
         c = (a + b) / 2
-        if f(c) == 0:
+        if f(c, params) == 0:
             return c
-        elif f(a) * f(c) < 0:
+        elif f(a, params) * f(c, params) < 0:
             b = c
         else:
             a = c
     return (a + b) / 2
 
 
-def f(h):
+def f(h, params):
+    MASS = params[0]
+    r_ball = params[1]
+    theta_ball_rad = params[2]
+    mu_s = params[3]
+
     N = (MASS * g * math.cos(theta_rad)) / (2 * math.cos(theta_ball_rad))
     term1 = MASS * g * h
     term2 = (mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad))) * (RADIUS * (theta_rad + math.pi))
@@ -62,11 +60,50 @@ def main():
     b = 100
     tol = .0000001
 
-    min_drop_height = bisection(f, a, b, tol)
+    MASS = 0.028  # mass of the ball in kg
+    r_ball = 0.0159  # radius of the ball in m
+    theta_ball = 47.795
+    theta_ball_rad = theta_ball * math.pi / 180
+    mu_s = .55
 
+    params = [MASS, r_ball, theta_ball_rad, mu_s]
+
+    min_drop_height_rubber = bisection(f, a, b, tol, params)
+
+    print(f'\nRUBBER BALL')
     print(f'The radius of the loop is {RADIUS} m')
-    print(f"The minimum drop height is {min_drop_height} m.")
-    print(f"The minimum drop height is {min_drop_height * 39.3701} in.")
+    print(f"The minimum drop height is {min_drop_height_rubber} m.")
+    print(f"The minimum drop height is {min_drop_height_rubber * 39.3701} in.")
+
+    MASS = .003
+    r_ball = .015
+    theta_ball = 51.06
+    theta_ball_rad = theta_ball * math.pi / 180
+    mu_s = .5
+
+    params = [MASS, r_ball, theta_ball_rad, mu_s]
+
+    min_drop_height_plastic = bisection(f, a, b, tol, params)
+
+    print(f'\nPLASTIC BALL')
+    print(f'The radius of the loop is {RADIUS} m')
+    print(f"The minimum drop height is {min_drop_height_plastic} m.")
+    print(f"The minimum drop height is {min_drop_height_plastic * 39.3701} in.")
+
+    MASS = .011
+    r_ball = .014
+    theta_ball = 55.44
+    theta_ball_rad = theta_ball * math.pi / 180
+    mu_s = .35
+
+    params = [MASS, r_ball, theta_ball_rad, mu_s]
+
+    min_drop_height_steel = bisection(f, a, b, tol, params)
+
+    print(f'\nSTEEL BALL')
+    print(f'The radius of the loop is {RADIUS} m')
+    print(f"The minimum drop height is {min_drop_height_steel} m.")
+    print(f"The minimum drop height is {min_drop_height_steel * 39.3701} in.")
 
 
 if __name__ == '__main__':
