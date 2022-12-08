@@ -1,4 +1,3 @@
-# make a header comment for me to type in
 """"
 This is a script for part 2 of the fall 2022 dynamics project.
 It will be used to calculate the minimum drop height for a ball to complete a loop on a ramp.
@@ -23,7 +22,7 @@ import math
 
 # define global constants
 MASS = 0.028  # mass of the ball in kg
-RADIUS = .5  # radius of the loop in m
+RADIUS = 5 * 0.0254  # radius of the loop in inches converted to meters
 RAMP_ANGLE = 50  # angle of the ramp in degrees
 theta_rad = RAMP_ANGLE * math.pi / 180
 theta_ball = 47.795
@@ -61,10 +60,11 @@ def f(h):
 def main():
     a = .001
     b = 100
-    tol = .001
+    tol = .0000001
 
     min_drop_height = bisection(f, a, b, tol)
 
+    print(f'The radius of the loop is {RADIUS} m')
     print(f"The minimum drop height is {min_drop_height} m.")
     print(f"The minimum drop height is {min_drop_height * 39.3701} in.")
 
