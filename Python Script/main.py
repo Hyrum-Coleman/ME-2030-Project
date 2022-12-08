@@ -49,12 +49,12 @@ def f(h, params):
 
     N = (MASS * g * math.cos(theta_rad)) / (2 * math.cos(theta_ball_rad))
     term1 = MASS * g * h
-    term2 = -(mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad)))
-    term3 = -mu_s * N * (RADIUS * (theta_rad + math.pi))
-    term4 = -MASS * g * 2 * RADIUS
-    term5 = -(MASS * RADIUS * g) / 2
+    term2 = (mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad)))
+    term3 = mu_s * N * (RADIUS * (theta_rad + math.pi))
+    term4 = MASS * g * 2 * RADIUS
+    term5 = (MASS * RADIUS * g) / 2
     term6 = (g * MASS * r_ball ** 2) / (5 * RADIUS)
-    VALUE = term1 + term2 + term3 - term4 - term5 - term6
+    VALUE = term1 - term2 - term3 - term4 - term5 - term6
     return VALUE
 
 
