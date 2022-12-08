@@ -52,7 +52,7 @@ def f(h):
     term1 = MASS * g * h
     term2 = (mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad))) * (RADIUS * (RAMP_ANGLE + 180))
     term3 = -MASS * g * 2 * RADIUS
-    term4 = -( MASS * RADIUS * g) / 2
+    term4 = -(MASS * RADIUS * g) / 2
     term5 = (g * MASS * r_ball ** 2) / 5
     VALUE = term1 + term2 + term3 + term4 + term5
     return VALUE
