@@ -21,6 +21,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
+# define global constants
+MASS = 0.028  # mass of the ball in kg
+RADIUS = 1.0  # radius of the loop in m
+RAMP_ANGLE = 30.0  # angle of the ramp in degrees
+g = 9.8  # gravitational acceleration in m/s^2
+rho = 1.225  # density of the air in kg/m^3
+Cd = 0.47  # drag coefficient of a sphere
+
+
+def ball_motion(min_height, max_height, tolerance, dt):
+    
 
 def main():
     gaming = 0
