@@ -28,7 +28,9 @@ g = 9.8  # gravitational acceleration in m/s^2
 
 
 def bisection(f, a, b, tol, params):
+    iters = 0
     while abs(a - b) > tol:
+        iters += 1
         c = (a + b) / 2
         if f(c, params) == 0:
             return c
@@ -36,7 +38,7 @@ def bisection(f, a, b, tol, params):
             b = c
         else:
             a = c
-    return (a + b) / 2
+    return (a + b) / 2, iters
 
 
 def f(h, params):
@@ -47,12 +49,12 @@ def f(h, params):
 
     N = (MASS * g * math.cos(theta_rad)) / (2 * math.cos(theta_ball_rad))
     term1 = MASS * g * h
-    term2 = (mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad)))
-    term3 = mu_s * (RADIUS * (theta_rad + math.pi))
+    term2 = -(mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad)))
+    term3 = -mu_s * N * (RADIUS * (theta_rad + math.pi))
     term4 = -MASS * g * 2 * RADIUS
     term5 = -(MASS * RADIUS * g) / 2
     term6 = (g * MASS * r_ball ** 2) / 5
-    VALUE = term1 + term2 - term3 - term4 - term5 - term6
+    VALUE = term1 + term2 + term3 - term4 - term5 - term6
     return VALUE
 
 
@@ -69,12 +71,13 @@ def main():
 
     params = [MASS, r_ball, theta_ball_rad, mu_s]
 
-    min_drop_height_rubber = bisection(f, a, b, tol, params)
+    min_drop_height_rubber, iters = bisection(f, a, b, tol, params)
 
     print(f'\nRUBBER BALL')
     print(f'The radius of the loop is {RADIUS} m')
     print(f"The minimum drop height is {min_drop_height_rubber} m.")
     print(f"The minimum drop height is {min_drop_height_rubber * 39.3701} in.")
+    print(f'The number of iterations is {iters}.')
 
     MASS = .003
     r_ball = .015
@@ -84,12 +87,13 @@ def main():
 
     params = [MASS, r_ball, theta_ball_rad, mu_s]
 
-    min_drop_height_plastic = bisection(f, a, b, tol, params)
+    min_drop_height_plastic, iters = bisection(f, a, b, tol, params)
 
     print(f'\nPLASTIC BALL')
     print(f'The radius of the loop is {RADIUS} m')
     print(f"The minimum drop height is {min_drop_height_plastic} m.")
     print(f"The minimum drop height is {min_drop_height_plastic * 39.3701} in.")
+    print(f"The number of iterations is {iters}.")
 
     MASS = .011
     r_ball = .014
@@ -99,12 +103,13 @@ def main():
 
     params = [MASS, r_ball, theta_ball_rad, mu_s]
 
-    min_drop_height_steel = bisection(f, a, b, tol, params)
+    min_drop_height_steel, iters = bisection(f, a, b, tol, params)
 
     print(f'\nSTEEL BALL')
     print(f'The radius of the loop is {RADIUS} m')
     print(f"The minimum drop height is {min_drop_height_steel} m.")
     print(f"The minimum drop height is {min_drop_height_steel * 39.3701} in.")
+    print(f"The number of iterations is {iters}.")
 
 
 if __name__ == '__main__':
