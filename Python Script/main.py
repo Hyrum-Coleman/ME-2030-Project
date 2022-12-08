@@ -53,7 +53,7 @@ def f(h, params):
     term3 = -mu_s * N * (RADIUS * (theta_rad + math.pi))
     term4 = -MASS * g * 2 * RADIUS
     term5 = -(MASS * RADIUS * g) / 2
-    term6 = (g * MASS * r_ball ** 2) / 5
+    term6 = (g * MASS * r_ball ** 2) / (5 * RADIUS)
     VALUE = term1 + term2 + term3 - term4 - term5 - term6
     return VALUE
 
