@@ -23,8 +23,8 @@ import math
 
 # define global constants
 MASS = 0.028  # mass of the ball in kg
-RADIUS = 1.0  # radius of the loop in m
-RAMP_ANGLE = 30.0  # angle of the ramp in degrees
+RADIUS = .5  # radius of the loop in m
+RAMP_ANGLE = 50  # angle of the ramp in degrees
 theta_rad = RAMP_ANGLE * math.pi / 180
 theta_ball = 47.795
 theta_ball_rad = theta_ball * math.pi / 180
