@@ -50,7 +50,7 @@ def bisection(f, a, b, tol):
 def f(h):
     N = (MASS * g * math.cos(theta_rad)) / (2 * math.cos(theta_ball_rad))
     term1 = MASS * g * h
-    term2 = (mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad))) * (RADIUS * (RAMP_ANGLE + 180))
+    term2 = (mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad))) * (RADIUS * (theta_rad + math.pi))
     term3 = -MASS * g * 2 * RADIUS
     term4 = -(MASS * RADIUS * g) / 2
     term5 = (g * MASS * r_ball ** 2) / 5
