@@ -1,4 +1,4 @@
-""""    
+""""
 This is a script for part 2 of the fall 2022 dynamics project.
 It will be used to calculate the minimum drop height for a ball to complete a loop on a ramp.
 
@@ -47,11 +47,12 @@ def f(h, params):
 
     N = (MASS * g * math.cos(theta_rad)) / (2 * math.cos(theta_ball_rad))
     term1 = MASS * g * h
-    term2 = (mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad))) * (RADIUS * (theta_rad + math.pi))
-    term3 = -MASS * g * 2 * RADIUS
-    term4 = -(MASS * RADIUS * g) / 2
-    term5 = (g * MASS * r_ball ** 2) / 5
-    VALUE = term1 + term2 + term3 + term4 + term5
+    term2 = (mu_s * N * (h - RADIUS * (1 - math.cos(theta_rad))) / (math.sin(theta_rad)))
+    term3 = mu_s * (RADIUS * (theta_rad + math.pi))
+    term4 = -MASS * g * 2 * RADIUS
+    term5 = -(MASS * RADIUS * g) / 2
+    term6 = (g * MASS * r_ball ** 2) / 5
+    VALUE = term1 + term2 - term3 - term4 - term5 - term6
     return VALUE
 
 
