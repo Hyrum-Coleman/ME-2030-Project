@@ -21,8 +21,8 @@ import matplotlib.pyplot as plt
 import math
 
 # define global constants
-RADIUS = 5 * 0.0254  # radius of the loop in inches converted to meters
-RAMP_ANGLE = 50  # angle of the ramp in degrees
+RADIUS = (9.5/2) * 0.0254  # radius of the loop in inches converted to meters
+RAMP_ANGLE = 33.5  # angle of the ramp in degrees
 theta_rad = RAMP_ANGLE * math.pi / 180
 g = 9.8  # gravitational acceleration in m/s^2
 
